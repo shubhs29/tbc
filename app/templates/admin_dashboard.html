@@ -1,0 +1,334 @@
+{% extends 'base.html' %} {% load static %} {% block title %}
+<title>Admin dashboard</title>
+<style>
+  .font-para {
+    font-family: "Montserrat", sans-serif;
+  }
+</style>
+{% endblock %} {% block body %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("add_prod_form");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const csrftoken = getCookie("csrftoken");
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrftoken,
+          },
+          body: formData,
+        });
+        const result = await response.json();
+        form.reset();
+        alert(result.msg);
+      } catch (error) {
+        alert("An error occurred.");
+      }
+    });
+
+    // Function to get the CSRF token from the cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const categorySelect = document.getElementById("category-view");
+    const searchInput = document.getElementById("search");
+    const productList = document.getElementById("product-list");
+    const products = productList.getElementsByClassName("product-item");
+
+    categorySelect.addEventListener("change", filterProducts);
+    searchInput.addEventListener("input", filterProducts);
+
+    function filterProducts() {
+      const selectedCategory = categorySelect.value.toLowerCase();
+      const searchTerm = searchInput.value.toLowerCase();
+
+      for (let product of products) {
+        const productCategory = product.getAttribute("data-category");
+        const productName = product.getAttribute("data-name");
+
+        const matchesCategory =
+          selectedCategory === "all" || productCategory === selectedCategory;
+        const matchesSearch = productName.includes(searchTerm);
+
+        if (matchesCategory && matchesSearch) {
+          product.style.display = "block";
+        } else {
+          product.style.display = "none";
+        }
+      }
+    }
+  });
+</script>
+
+<!-- NavBar -->
+<div
+  class="d-flex justify-content-between border shadow p-3 align-items-center mb-3 font-para"
+>
+  <h1 class="h1">ThriveByChoice | Admin</h1>
+  <a href="{% url 'logout' %}" class="btn bg-dark text-light rounded">Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="container-fluid font-para">
+  <div class="d-flex gap-3 justify-content-center">
+    <button class="btn btn-dark" onclick="changeContent('add_prod')">
+      Add Product
+    </button>
+    <button class="btn btn-dark" onclick="changeContent('view_prod')">
+      View Product
+    </button>
+    <button class="btn btn-dark" onclick="changeContent('view_user')">
+      View Users
+    </button>
+  </div>
+
+  <!-- Add Product -->
+  <div class="container w-50 my-3 p-3 border border-2 rounded" id="add_prod">
+    <div class="d-flex justify-content-center">
+      <h3 class="h4">Add Product</h3>
+    </div>
+    <form
+      action="{% url 'add_product' %}"
+      method="post"
+      enctype="multipart/form-data"
+      id="add_prod_form"
+    >
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="name" class="form-label">Product Name</label>
+        <input
+          type="text"
+          class="form-control"
+          name="name"
+          id="name"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <label for="image_file" class="form-label">Product Image</label>
+        <input
+          class="form-control"
+          type="file"
+          id="image_file"
+          name="image_file"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <select
+          name="category"
+          id="category"
+          class="form-select"
+          aria-label="Default select example"
+          required
+        >
+          <option selected hidden>Select Category</option>
+          <option value="food">Food</option>
+          <option value="drinks">Drinks</option>
+          <option value="snacks">Snacks</option>
+          <option value="skin care">Skin Care</option>
+          <option value="personal care">Personal Care</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="ingredients" class="form-label">Ingredients</label>
+        <textarea
+          class="form-control"
+          placeholder="Seperate ingredients by comma......"
+          name="ingredients"
+          id="ingredients"
+          rows="3"
+          required
+        ></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea
+          class="form-control"
+          name="description"
+          id="description"
+          rows="3"
+          placeholder="...."
+          required
+        ></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="Keywords" class="form-label">Keywords</label>
+        <textarea
+          class="form-control"
+          name="keywords"
+          id="Keywords"
+          rows="3"
+          placeholder="Seperate by space....."
+          required
+        ></textarea>
+      </div>
+      <div class="d-grid gap-2">
+        <button type="submit" id="submit" class="btn btn-success">Add</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- View Product -->
+  <div
+    class="container my-3 p-3 border border-2 rounded"
+    id="view_prod"
+    style="display: none"
+  >
+    <div class="d-flex justify-content-center">
+      <h3 class="h4">View Products</h3>
+    </div>
+    <div class="container">
+      <div class="container-fluid w-50">
+        <div class="mb-3">
+          <select
+            name="category-view"
+            id="category-view"
+            class="form-select"
+            aria-label="Default select example"
+            required
+          >
+            <option selected value="all">All</option>
+            <option value="food">Food</option>
+            <option value="drinks">Drinks</option>
+            <option value="snacks">Snacks</option>
+            <option value="skin care">Skin Care</option>
+            <option value="personal care">Personal Care</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <input
+            type="search"
+            placeholder="Search"
+            class="form-control"
+            name="search"
+            id="search"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="container-fluid">
+        <div class="row" id="product-list">
+          {% for product in products %}
+          <div
+            class="col-12 product-item shadow"
+            data-category="{{ product.category | lower }}"
+            data-name="{{ product.name | lower }}"
+          >
+            <div class="row gap-3 p-3">
+              <img
+                src="{% static product.image_file %}"
+                class="img-fluid col-4 p-3 border-2"
+                alt="{{ product.product_id }}"
+              />
+              <div class="p-3 col">
+                <h4 class="h4">
+                  {{ product.name }} {% if product.toxicity %}
+                  <span class="badge bg-danger" style="font-size: 15px"
+                    >Toxic</span
+                  >
+                  {% else %}
+                  <span class="badge bg-success" style="font-size: 15px"
+                    >Good</span
+                  >
+                  {% endif %}
+                </h4>
+                <h5 class="text-secondary">{{ product.category }}</h5>
+                <p>{{ product.description }}</p>
+                <ul class="d-flex flex-wrap">
+                  {% for item in product.ingredients %}
+                  <li class="list-group-item">{{ item }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Users -->
+  <div
+    class="container w-50 my-3 p-3 border border-2 rounded"
+    id="view_user"
+    style="display: none"
+  >
+    <div class="d-flex justify-content-center">
+      <h3 class="h4">View Users</h3>
+    </div>
+    <ul class="list-group container">
+      {% for user in users %}
+      <li class="list-group-item">
+        {{ user.username }} {% if user.username == current_user.username %}
+        <span class="bg-success p-1 rounded text-light">You</span>
+        {% elif user.is_superuser %}
+        <span class="bg-primary p-1 rounded text-light">Admin</span>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<!-- Footer -->
+<div
+  class="d-flex justify-content-between border-top py-2 shadow font-para mt-5"
+>
+  <div class="d-flex align-items-center">
+    <b class="border-end border-1 p-2 pe-3">ThriveByChoice</b>
+    <small class="text-secondary px-3">© 2020 ThriveByChoice</small>
+  </div>
+  <div class="py-3 pe-3" style="font-size: 24px">
+    <i class="fa-brands fa-instagram"></i>
+    <i class="fa-brands fa-twitter"></i>
+    <i class="fa-brands fa-facebook"></i>
+    <i class="fa-brands fa-linkedin"></i>
+  </div>
+</div>
+
+<!-- Some dynamic works -->
+<script>
+  function changeContent(content) {
+    var add_prod = document.getElementById("add_prod");
+    var view_prod = document.getElementById("view_prod");
+    var view_user = document.getElementById("view_user");
+    if (content === "add_prod") {
+      add_prod.style.display = "block";
+      view_prod.style.display = "none";
+      view_user.style.display = "none";
+    } else if (content === "view_prod") {
+      view_prod.style.display = "block";
+      view_user.style.display = "none";
+      add_prod.style.display = "none";
+    } else if (content === "view_user") {
+      view_user.style.display = "block";
+      add_prod.style.display = "none";
+      view_prod.style.display = "none";
+    }
+  }
+</script>
+
+{% endblock %}

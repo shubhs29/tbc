@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+<title>Home</title>
+<style>
+    .font-para {
+        font-family: "Montserrat", sans-serif;
+    }
+
+    body {
+        background-color: rgb(226, 226, 226);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- NavBar -->
+<div class="d-flex justify-content-between border p-3 align-items-center font-para bg-light">
+    <h1 class="h1">ThriveByChoice</h1>
+    <div class="container-fluid row justify-content-end">
+        <form method="get" action="{% url 'search' %}" class="form-inline col-5">
+            <div class="input-group rounded">
+                <input type="search" name="search" class="form-control rounded-3"
+                    placeholder="Search for brands and products" aria-label="Search" aria-describedby="search-button">
+                <div class="input-group-append">
+                    <button class="btn btn-dark px-3" type="submit" id="search-button">
+                        <i style="color: white;" class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <a href="{% url 'logout' %}" class="btn bg-dark text-light col-1 rounded">Logout</a>
+    </div>
+
+</div>
+
+<!-- Main Content -->
+<div class="mt-3">
+    <ul class="container w-50 border p-2 bg-dark d-flex justify-content-evenly font-para">
+        {% for category in categories %}
+        <a href="/search?search={{ category }}" class="text-light align-self-center h5 text-decoration-none p-2 m-0">{{ category|title }}</a>
+        {% endfor %}
+    </ul>
+</div>
+<div class="container-fluid mt-3 font-para">
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+        {% for product in products %}
+        <a class="text-decoration-none" href="{% url 'product_details' product.product_id %}">
+            <div class="card" style="width: 25rem;">
+                <img src="{% static product.image_file %}" style="height: 30vh;" class="p-1 shadow card-img-top"
+                    alt="{{ product.product_id }}">
+                <div class="card-body">
+                    <h5 class="card-title text-dark text-truncate">{{ product.name|title }}</h5>
+                    <h6 class="card-title text-secondary">{{ product.category|title }}</h6>
+                    <p style="color: green;">{{ product.avg_rating }} / 5.0</p>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="d-flex justify-content-between border-top py-2 shadow font-para mt-5 bg-light">
+    <div class="d-flex align-items-center">
+        <b class="border-end border-1 p-2 pe-3">ThriveByChoice</b>
+        <small class="text-secondary px-3">© 2020 ThriveByChoice</small>
+    </div>
+    <div class="py-3 pe-3" style="font-size: 24px;">
+        <i class="fa-brands fa-instagram"></i>
+        <i class="fa-brands fa-twitter"></i>
+        <i class="fa-brands fa-facebook"></i>
+        <i class="fa-brands fa-linkedin"></i>
+    </div>
+</div>
+{% endblock %}

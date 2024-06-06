@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Login</title>
+<style>
+    .font-para {
+        font-family: "Montserrat", sans-serif;
+    }
+
+    body {
+        background-color: rgb(236, 236, 236);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- NavBar -->
+<div class="d-flex justify-content-between border p-3 align-items-center mb-5 font-para bg-light">
+    <h1 class="h1">ThriveByChoice</h1>
+    <a href="{% url 'index' %}" class="text-dark"><i class="fa-solid fa-xmark"></i></a>
+</div>
+
+<!-- Form -->
+<div class="container w-25 border rounded-3 p-5 bg-light font-para">
+    <form class="needs-validation" action="{% url 'login' %}" method="post" novalidate>
+        {% csrf_token %}
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <div class="alert alert-success text-center" role="alert">
+            {{ message }}
+        </div>
+        {% endif %}
+        {% endfor %}
+        <h3 class="h3 mb-3">Login Your Account</h3>
+        <div class="mb-3">
+            <label for="email" class="form-label">Your Email</label>
+            <input type="email" class="form-control" name="email" id="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" id="password" required>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" name="remember_me" id="remember_me">
+            <label class="form-check-label text-secondary" for="remember_me">Remember me</label>
+        </div>
+        {% for message in messages %}
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+        {% endif %}
+        {% endfor %}
+        <div class="d-grid gap-2">
+            <button type="submit" id="submit" class="btn btn-success"><i
+                    class="fa-solid fa-right-to-bracket"></i></button>
+        </div>
+        <p class="text-secondary mt-4">Don't have an account? <span style="font-weight: 600;"><a
+                    class="text-decoration-none text-secondary" href="{% url 'signup' %}">Signup Here</a></span></p>
+    </form>
+</div>
+
+{% endblock %}

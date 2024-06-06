@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+<title>{{ product.name }}</title>
+<style>
+    .font-para {
+        font-family: "Montserrat", sans-serif;
+    }
+
+    body {
+        background-color: rgb(226, 226, 226);
+    }
+
+    .star-rating {
+        direction: rtl;
+        display: inline-flex;
+    }
+
+    .star-rating input[type="radio"] {
+        display: none;
+    }
+
+    .star-rating label {
+        font-size: 2em;
+        color: #ccc;
+        cursor: pointer;
+    }
+
+    .star-rating input[type="radio"]:checked~label {
+        color: #f5c518;
+    }
+
+    .star-rating label:hover,
+    .star-rating label:hover~label {
+        color: #f5c518;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- NavBar -->
+<div class="d-flex justify-content-between border p-3 align-items-center font-para bg-light">
+    <h1 class="h1">ThriveByChoice</h1>
+    <div class="container-fluid row gap-2 justify-content-end">
+        <form method="get" action="{% url 'search' %}" class="form-inline col-5">
+            <div class="input-group rounded">
+                <input type="search" name="search" class="form-control rounded-3"
+                    placeholder="Search for brands and products" aria-label="Search" aria-describedby="search-button">
+                <div class="input-group-append">
+                    <button class="btn btn-dark px-3" type="submit" id="search-button">
+                        <i style="color: white;" class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <a href="{% url 'home' %}" class="btn bg-dark text-light col-1 rounded">Home</a>
+        <a href="{% url 'logout' %}" class="btn bg-dark text-light col-1 rounded">Logout</a>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="mt-3">
+    <ul class="container w-50 border p-2 bg-dark d-flex justify-content-evenly font-para">
+        {% for category in categories %}
+        <a href="/search?search={{ category }}" class="text-light align-self-center h5 text-decoration-none p-2 m-0">{{ category|title }}</a>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="mx-3 row d-flex bg-light p-3 font-para">
+    <div class="col-4 d-flex align-items-center">
+        <img src="{% static product.image_file %}" alt="{{ product.product_id }}" class="img-fluid">
+    </div>
+
+    <div class="container-fluid col-8">
+        <h3 class="h3">{{ product.name|title }}
+            {% if product.toxicity %}
+            <span class="bg-danger text-light p-2 fs-6 rounded-pill">Toxic</span>
+            {% else %}
+            <span class="bg-success text-light p-2 fs-6 rounded-pill">Safe</span>
+            {% endif %}
+        </h3>
+        <h4 class="h4 text-secondary">{{ product.category|title }}</h4>
+        <h4 class="h4 text-success">{{ product.avg_rating }} / 5.0</h4>
+        <p>{{ product.description }}</p>
+        <ul class="list-group">
+            {% for ing in product.ingredients %}
+            {% if ing in toxic_ingredients %}
+            <li class="list-group-item bg-danger text-light">{{ ing|title }}</li>
+            {% else %}
+            <li class="list-group-item">{{ ing|title }}</li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% if safe_recommendations %}
+<div class="container-fluid mt-3 font-para">
+    <h1>Safe Recommendation</h1>
+    {% for i in safe_recommendations %}
+    <a class="text-decoration-none" href="{% url 'product_details' i.product_id %}">
+        <div class="d-flex gap-3 p-3 bg-light">
+            <img src="{% static i.image_file %}" style="height: 30vh;"
+                class="p-1 shadow" alt="{{ i.product_id }}">
+            <div class="w-50">
+                <h5 class="text-dark text-truncate">{{ i.name|title }}</h5>
+                <h6 class="card-title text-secondary">{{ i.category|title }}</h6>
+                <h6 class="card-title text-secondary">{{ i.description }}</h6>
+                <p style="color: green;">{{ i.avg_rating }} / 5.0</p>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endif %}
+{% if not has_reviewed %}
+<div class="my-3 container w-50 font-para shadow p-5">
+    <form action="{% url 'review' product.product_id %}" method="post">
+        {% csrf_token %}
+        <h3 class="h3 text-secondary">Rate the product</h3>
+        <div class="">
+            <div class="star-rating mb-2">
+                <input type="radio" id="star5" name="rating" value="5"><label for="star5" title="5 stars"><i
+                        class="fas fa-star"></i></label>
+                <input type="radio" id="star4" name="rating" value="4"><label for="star4" title="4 stars"><i
+                        class="fas fa-star"></i></label>
+                <input type="radio" id="star3" name="rating" value="3"><label for="star3" title="3 stars"><i
+                        class="fas fa-star"></i></label>
+                <input type="radio" id="star2" name="rating" value="2"><label for="star2" title="2 stars"><i
+                        class="fas fa-star"></i></label>
+                <input type="radio" id="star1" name="rating" value="1"><label for="star1" title="1 star"><i
+                        class="fas fa-star"></i></label>
+            </div>
+            <h3 class="h3 text-secondary">Tell us more about your experience</h3>
+            <textarea class="form-control mb-2" name="review" placeholder="Write here..." id="review"
+                rows="5"></textarea>
+            <div class="d-flex justify-content-center">
+                <button class="btn btn-success w-50" type="submit" name="submit" id="submit">Submit</button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+<div class="container font-para mt-3">
+    <h1 class="text-secondary">Recent reviews</h1>
+    {% if reviews %}
+    {% for rev in reviews %}
+    <div class="card">
+        <div class="card-header">
+            {{ rev.reviewer }}
+            <span>
+                {% if rev.rating == '1' %}
+                <i class="fas fa-star"></i>
+                {% elif rev.rating == '2' %}
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                {% elif rev.rating == '3' %}
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                {% elif rev.rating == '4' %}
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                {% else %}
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                {% endif %}
+            </span>
+            {% if rev.reviewer == has_reviewed.reviewer %}
+            <span class="mark">[ You ]</span>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <p class="card-text">{{ rev.review }}</p>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="alert-primary p-3">No reviews!</div>
+    {% endif %}
+</div>
+
+<!-- Footer -->
+<div class="d-flex justify-content-between border-top py-2 shadow font-para mt-5 bg-light">
+    <div class="d-flex align-items-center">
+        <b class="border-end border-1 p-2 pe-3">ThriveByChoice</b>
+        <small class="text-secondary px-3">© 2020 ThriveByChoice</small>
+    </div>
+    <div class="py-3 pe-3" style="font-size: 24px;">
+        <i class="fa-brands fa-instagram"></i>
+        <i class="fa-brands fa-twitter"></i>
+        <i class="fa-brands fa-facebook"></i>
+        <i class="fa-brands fa-linkedin"></i>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends 'base.html' %} {% load static %} {% block title %}
+<title>Welcome to ThriveByChoice</title>
+<style>
+  .font-para {
+    font-family: "Montserrat", sans-serif;
+  }
+</style>
+{% endblock %} {% block body %}
+<!-- NavBar -->
+<div
+  class="d-flex justify-content-between border shadow p-3 align-items-center mb-5 font-para"
+>
+  <h1 class="h1">ThriveByChoice</h1>
+  <a href="{% url 'signup' %}" class="btn bg-dark text-light rounded"
+    >Create Account</a
+  >
+</div>
+
+<!-- Get started, login and Product of the Day -->
+<div class="d-flex align-items-center flex-fill font-para px-5 py-3">
+  <div class="col">
+    <p class="w-75 h1">
+      Explore, learn and <br />
+      choose sustainable
+    </p>
+    <p class="text-secondary fs-5 pe-5">
+      Explore a realm of conscious living through ThriveByChoice. Uncover
+      intricate product details, tailored suggestions, and community-driven
+      involvement, embracing sustainable consumer choices.
+    </p>
+    <div class="mt-3">
+      <a
+        href="{% url 'signup' %}"
+        class="btn text-light bg-dark rounded p-2 me-2"
+        >Get started</a
+      >
+      <a href="{% url 'login' %}" class="btn btn-outline-dark rounded p-2"
+        >Signin</a
+      >
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card shadow">
+      <h4 class="card-header">Product of the Day</h4>
+      <a
+        class="text-decoration-none"
+        href="{% url 'product_details' product.product_id %}"
+      >
+        <img
+          src="{% static product.image_file %}"
+          alt="Product of the Day"
+          class="p-3 card-top-img img-fluid"
+          style="height: 22vw"
+        />
+        <h5 class="card-title px-3 text-dark">{{ product.name }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted p-3 text-decoration-none">
+          Rating: {{ product.avg_rating }}
+        </h6>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Customer Review -->
+<div class="p-3 d-flex mt-3 gap-1 font-para">
+  <div class="col-4">
+    <div class="card d-flex flex-column h-100">
+      <img
+        src="https://s3.amazonaws.com/savana.uploads/wp-content/uploads/2019/01/18100129/cerave_hydrating_facial_cleanser_2.jpg"
+        alt="Product 1"
+        class="p-3 card-top-img img-fluid"
+      />
+      <div class="card-body flex-grow-1 d-flex flex-column">
+        <h6 class="card-subtitle mb-2">Rating: 4.8</h6>
+        <h5 class="card-title">CeraVe Hydrating Facial Cleanser</h5>
+        <p class="card-txt flex-grow-1">
+          This cleanser is fantastic for my sensitive skin. It doesn't foam, but
+          it leaves my face feeling clean and hydrated. I love how it doesn't
+          strip my skin of its natural oils. Highly recommend for those with dry
+          or sensitive skin.
+        </p>
+        <a href="" class="mt-auto" style="text-decoration: none"
+          >Learn More →</a
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card d-flex flex-column h-100">
+      <img
+        src="https://th.bing.com/th/id/OIP.UZ7fF2vW3HqNznYmZt_JLgHaHa?rs=1&pid=ImgDetMain"
+        alt="Product 2"
+        class="p-3 card-top-img img-fluid"
+      />
+      <div class="card-body flex-grow-1 d-flex flex-column">
+        <h6 class="card-subtitle mb-2">Rating: 4.6</h6>
+        <h5 class="card-title">Aveeno Daily Moisturizing Lotion</h5>
+        <p class="card-txt flex-grow-1">
+          This lotion is a lifesaver for my dry, itchy skin. It absorbs quickly
+          and provides long-lasting moisture without feeling greasy. My skin
+          feels soft and smooth all day. Great for daily use, especially in the
+          winter months.
+        </p>
+        <a href="" class="mt-auto" style="text-decoration: none"
+          >Learn More →</a
+        >
+      </div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card d-flex flex-column h-100">
+      <img
+        src="https://hsastore.com/dw/image/v2/BFKW_PRD/on/demandware.static/-/Sites-hec-master/default/dw7ae5f6a7/images/large/neutrogena-ultra-sheer-dry-touch-sunscreen-spf-100-3-fl-oz-17744m-1.jpg?sw=2700"
+        alt="Product 3"
+        class="p-3 card-top-img img-fluid"
+      />
+      <div class="card-body flex-grow-1 d-flex flex-column">
+        <h6 class="card-subtitle mb-2">Rating: 4.9</h6>
+        <h5 class="card-title">
+          Neutrogena Ultra Sheer Dry-Touch Sunscreen SPF 100
+        </h5>
+        <p class="card-txt flex-grow-1">
+          This is my go-to sunscreen. It's lightweight and doesn't leave a white
+          cast on my skin. The dry-touch finish is perfect for my oily skin, and
+          I love how it provides high SPF protection without feeling heavy or
+          greasy.
+        </p>
+        <a href="" class="mt-auto" style="text-decoration: none"
+          >Learn More →</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Explore -->
+<div class="d-flex align-items-center p-3 font-para">
+  <div class="col-3">
+    <img
+      src="https://imgs.search.brave.com/1DJEKnTzD036cND_4AMu-W_QBb46mqEWLVWFnq-qJnk/rs:fit:500:0:0/g:ce/aHR0cHM6Ly9zdC5k/ZXBvc2l0cGhvdG9z/LmNvbS8yNjI3MDIx/LzI5OTkvaS80NTAv/ZGVwb3NpdHBob3Rv/c18yOTk5MzkxMS1z/dG9jay1waG90by1z/dXN0YWluYWJsZS1k/ZXZlbG9wbWVudC13/b3JsZHdpZGUuanBn"
+      alt="develop"
+      style="height: 20vw"
+      class="p-2 img-fluid"
+    />
+  </div>
+  <div class="col">
+    <p class="w-50 h2">
+      Find sustainable product and make informed choices for a healthier
+      lifestyle
+    </p>
+    <div class="mt-3">
+      <a href="{% url 'signup' %}" class="btn text-light bg-dark rounded p-2"
+        >Explore</a
+      >
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="d-flex justify-content-between border-top py-2 shadow font-para">
+  <div class="d-flex align-items-center">
+    <b class="border-end border-1 p-2 pe-3">ThriveByChoice</b>
+    <small class="text-secondary px-3">© 2020 ThriveByChoice</small>
+  </div>
+  <div class="py-3 pe-3" style="font-size: 24px">
+    <i class="fa-brands fa-instagram"></i>
+    <i class="fa-brands fa-twitter"></i>
+    <i class="fa-brands fa-facebook"></i>
+    <i class="fa-brands fa-linkedin"></i>
+  </div>
+</div>
+{% endblock %}
